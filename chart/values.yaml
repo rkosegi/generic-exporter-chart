@@ -55,19 +55,15 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 config: {}
-extraMounts:
-  - name: tmp
-    mountPath: /tmp
+extraMounts: # extra mount points to use in pod
 #  - path: /data
 #    name: data
 #    sub: file.txt
-extraVolumes:
-  - name: tmp
-    emptyDir: {}
+extraVolumes: # extra volumes to use in pod
 #  - name: config
 #    secret:
 #      secretName: config
-extraObjects: []
+extraObjects: [] # extra objects to create
 #  - apiVersion: v1
 #    kind: Secret
 #    metadata:
@@ -75,4 +71,5 @@ extraObjects: []
 #    stringData:
 #      config.yaml: some data
 # exporter entry point
-command: ''
+command: [] # container command
+arguments: [] # additional arguments
