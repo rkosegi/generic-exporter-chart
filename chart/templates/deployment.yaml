@@ -1,0 +1,74 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "exporter.fullname" . }}
+  labels:
+    {{- include "exporter.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "exporter.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "exporter.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "exporter.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ required "Image repository is required" .Values.image.name }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.command  }}
+          command:
+            - {{ .Values.command | quote }}
+          {{- end }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.port }}
+              protocol: TCP
+          {{- if .Values.probe.enabled  }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probe.path }}
+              port: metrics
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.probe.path }}
+              port: metrics
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- with .Values.extraMounts -}}
+            {{ toYaml . | nindent 12}}
+            {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- with .Values.extraVolumes -}}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}

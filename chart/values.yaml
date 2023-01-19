@@ -1,0 +1,78 @@
+---
+# Number of replicas
+replicaCount: 1
+
+image:
+  name: "" # Container image name and version
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+serviceMonitor:
+  enabled: true  # Whether servicemonitor resource should be installed
+  scrape_config: # scrape configuration
+    - port: metrics
+      interval: 30s
+podAnnotations: {}
+podSecurityContext: {}
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+# runAsUser: 1000
+
+service:
+  # Type of service
+  type: ClusterIP
+  # Service port
+  port: 80
+# Container port
+port: 9000
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+probe:
+  enabled: true
+  path: /healthz
+nodeSelector: {}
+tolerations: []
+affinity: {}
+config: {}
+extraMounts:
+  - name: tmp
+    mountPath: /tmp
+#  - path: /data
+#    name: data
+#    sub: file.txt
+extraVolumes:
+  - name: tmp
+    emptyDir: {}
+#  - name: config
+#    secret:
+#      secretName: config
+extraObjects: []
+#  - apiVersion: v1
+#    kind: Secret
+#    metadata:
+#      name: config
+#    stringData:
+#      config.yaml: some data
+# exporter entry point
+command: ''
