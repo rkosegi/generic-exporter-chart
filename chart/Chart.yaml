@@ -15,8 +15,8 @@
 apiVersion: v2
 name: generic-prometheus-exporter
 description: Generic Prometheus exporter chart
-version: 1.0.1
-appVersion: v1.0.1
+version: 1.0.2
+appVersion: v1.0.2
 type: application
 maintainers:
   - name: Richard Kosegi
