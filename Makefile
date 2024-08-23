@@ -19,6 +19,9 @@ VER_MINOR   := $(word 2,$(VER_PARTS))
 VER_PATCH   := $(word 3,$(VER_PARTS))
 VER_NEXT_PATCH    := $(VER_MAJOR).$(VER_MINOR).$(shell echo $$(($(VER_PATCH)+1)))
 
+build:
+	helm package chart
+
 bump-patch-version:
 	@echo Current: $(VERSION)
 	@echo Next: $(VER_NEXT_PATCH)
