@@ -11,49 +11,57 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
----
-# Number of replicas
+#
+# -- Number of replicas
 replicaCount: 1
-
 image:
-  name: "" # Container image name and version
-  pullPolicy: IfNotPresent
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
+  # -- Container image name and version. Must be defined.
   name: ""
+  # -- When to pull image.
+  pullPolicy: Always
+# -- List of pull secrets
+imagePullSecrets: []
+# Override partial name
+nameOverride: ""
+# Override full name
+fullnameOverride: ""
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: false
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # -- If not set and create is true, a name is generated using the fullname template
+  name: default
+service:
+  # -- Type of service
+  type: ClusterIP
+  # -- Service port
+  port: 80
+  # -- Name of target port. Used to match endpoint in service monitor and definition in service.
+  targetPort: metrics
 serviceMonitor:
-  enabled: true  # Whether servicemonitor resource should be installed
-  scrape_config: # scrape configuration
-    - port: metrics
+  # -- Whether servicemonitor resource should be created
+  enabled: true
+  # -- Endpoint configuration
+  endpoints:
+    - port: '{{ .Values.service.targetPort }}'
       interval: 30s
+# -- annotations to put on pod
 podAnnotations: {}
-podSecurityContext: {}
-
-securityContext:
+# -- SecurityContext to put on pod
+podSecurityContext:
   capabilities:
     drop:
-    - ALL
+      - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
 # runAsUser: 1000
-
-service:
-  # Type of service
-  type: ClusterIP
-  # Service port
-  port: 80
-# Container port
-port: 9000
+# -- Additional security context to put on container
+securityContext: {}
+# -- Port that exporter is listening on. Also used for probes (if enabled)
+containerPort: 9000
+# -- Container resources
 resources:
   limits:
     cpu: 100m
@@ -62,27 +70,36 @@ resources:
     cpu: 50m
     memory: 64Mi
 probe:
+  # -- When true, then probes are configured on container
   enabled: true
+  # -- HTTP context path that handles probe requests
   path: /healthz
+# -- Node selector that could restrict placement of pods
 nodeSelector: {}
+# -- Pod's tolerations.
 tolerations: []
+# -- Pod's scheduling constraints.
 affinity: {}
 config: {}
-extraMounts: # extra mount points to use in pod
+# -- extra mount points to use in pod, should be aligned with extraVolumes
+extraMounts:
 #  - path: /data
 #    name: data
 #    sub: file.txt
-extraVolumes: # extra volumes to use in pod
+# -- extra volumes to use in pod, should be aligned with extraMounts
+extraVolumes:
 #  - name: config
 #    secret:
 #      secretName: config
-extraObjects: [] # extra objects to create
+# -- extra objects to create
+extraObjects: []
 #  - apiVersion: v1
 #    kind: Secret
 #    metadata:
 #      name: config
 #    stringData:
 #      config.yaml: some data
-# exporter entry point
-command: [] # container command
+# -- exporter entry point
+command: []
+# -- exported arguments
 arguments: [] # additional arguments
