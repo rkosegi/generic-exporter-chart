@@ -11,20 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-{{- if .Values.serviceMonitor.enabled -}}
+{{ if .Values.serviceMonitor.enabled -}}
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "exporter.fullname" . }}
+  name: {{ include "generic-exporter.fullname" . }}
   labels:
-    {{- include "exporter.labels" . | nindent 6 }}
+    {{- include "generic-exporter.labels" . | nindent 6 }}
 spec:
   selector:
     matchLabels:
-      {{- include "exporter.selectorLabels" . | nindent 6 }}
+      {{- include "generic-exporter.selectorLabels" . | nindent 6 }}
   endpoints:
-    {{- with .Values.serviceMonitor.scrape_config -}}
-      {{ toYaml . | nindent 4 }}
+    {{- with .Values.serviceMonitor.endpoints -}}
+      {{ (tpl (toYaml .) $) | nindent 4 }}
     {{- end }}
 {{- end }}

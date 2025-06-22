@@ -15,14 +15,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "exporter.fullname" . }}
+  name: {{ include "generic-exporter.fullname" . }}
   labels:
-    {{- include "exporter.labels" . | nindent 4 }}
+    {{- include "generic-exporter.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "exporter.selectorLabels" . | nindent 6 }}
+      {{- include "generic-exporter.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -30,19 +30,23 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "exporter.selectorLabels" . | nindent 8 }}
+        {{- include "generic-exporter.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "exporter.serviceAccountName" . }}
+      serviceAccountName: {{ include "generic-exporter.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- with .Values.podSecurityContext }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+          {{- end }}
           image: {{ required "Image repository is required" .Values.image.name }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.command  }}
@@ -58,18 +62,22 @@ spec:
             {{- end }}
           {{- end }}
           ports:
-            - name: metrics
-              containerPort: {{ .Values.port }}
+            - name: {{ .Values.service.targetPort }}
+              containerPort: {{ .Values.containerPort }}
               protocol: TCP
           {{- if .Values.probe.enabled  }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.probe.path }}
+              port: {{ .Values.containerPort }}
           livenessProbe:
             httpGet:
               path: {{ .Values.probe.path }}
-              port: metrics
+              port: {{ .Values.containerPort }}
           readinessProbe:
             httpGet:
               path: {{ .Values.probe.path }}
-              port: metrics
+              port: {{ .Values.containerPort}}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
