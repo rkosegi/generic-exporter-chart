@@ -19,8 +19,20 @@ repos:
       - id: trailing-whitespace
       - id: check-merge-conflict
       - id: end-of-file-fixer
+        exclude: chart/README\.md
       - id: mixed-line-ending
-  - repo: https://github.com/gruntwork-io/pre-commit
-    rev: v0.1.29
+
+  - repo: https://github.com/dj-wasabi/pre-commit-hooks
+    rev: 0.1.1
     hooks:
-      - id: helmlint
+      - id: helm-lint
+      - id: helm-unittest
+        args:
+          - chart
+      - id: verify-yaml
+        files: (chart/values\.yaml|tests/.*\.yaml)
+
+  - repo: https://github.com/norwoodj/helm-docs
+    rev:  v1.14.2
+    hooks:
+      - id: helm-docs

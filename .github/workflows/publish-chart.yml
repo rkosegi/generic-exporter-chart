@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
 
 env:
-  CHART_NAME: generic-exporter-chart
+  CHART_NAME: generic-exporter
 
 jobs:
   chart:
