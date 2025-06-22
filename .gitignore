@@ -13,3 +13,4 @@
 # limitations under the License.
 /.idea/
 *.tgz
+/chart/tests/__snapshot__/
