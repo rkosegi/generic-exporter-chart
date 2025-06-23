@@ -17,11 +17,14 @@ Generic Prometheus exporter chart
 | affinity | object | `{}` | Pod's scheduling constraints. |
 | arguments | list | `[]` | exported arguments |
 | command | list | `[]` | exporter entry point |
-| config | object | `{}` |  |
+| config.confidential | bool | `true` | When true, resource as embedded into Secret, instead of ConfigMap |
+| config.data | object | `{}` | Actual config files content |
+| config.enabled | bool | `false` | Whether to create resource with config files |
+| config.mountPath | string | `"/config"` | Path on the file system where configuration files are mounted onto |
 | containerPort | int | `9000` | Port that exporter is listening on. Also used for probes (if enabled) |
 | extraMounts | string | `nil` | extra mount points to use in pod, should be aligned with extraVolumes |
 | extraObjects | list | `[]` | extra objects to create |
-| extraVolumes | string | `nil` | extra volumes to use in pod, should be aligned with extraMounts |
+| extraVolumes | list | `[]` | extra volumes to use in pod, should be aligned with extraMounts |
 | fullnameOverride | string | `""` |  |
 | image.name | string | `""` | Container image name and version. Must be defined. |
 | image.pullPolicy | string | `"Always"` | When to pull image. |

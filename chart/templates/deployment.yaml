@@ -81,9 +81,16 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.extraMounts -}}
+          {{- $allMounts := list }}
+          {{- if .Values.config.enabled }}
+          {{-   $allMounts = append $allMounts (dict "name" "config" "mountPath" .Values.config.mountPath "readOnly" true)}}
+          {{- end }}
+          {{- if .Values.extraVolumes }}
+          {{-   $allMounts = concat $allMounts .Values.extraMounts }}
+          {{- end }}
+          {{- with $allMounts }}
           volumeMounts:
-            {{ toYaml . | nindent 12}}
+            {{- tpl (toYaml $allMounts) $ | nindent 12}}
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -97,7 +104,22 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.extraVolumes -}}
+      {{- $allVolumes := list }}
+      {{- if .Values.config.enabled }}
+      {{-   $ckind := "configMap" }}
+      {{-   $cnameEl := "name" }}
+      {{-   if .Values.config.confidential }}
+      {{-     $ckind = "secret" }}
+      {{-     $cnameEl = "secretName" }}
+      {{-   end }}
+      {{-   $cname := ( printf "%s-config" (include "generic-exporter.fullname" .) ) }}
+      {{-   $cfgVolume := dict "name" "config" $ckind (dict $cnameEl $cname) }}
+      {{-   $allVolumes = append $allVolumes $cfgVolume }}
+      {{- end }}
+      {{- if .Values.extraVolumes }}
+      {{-   $allVolumes = concat $allVolumes .Values.extraVolumes }}
+      {{- end }}
+      {{- with $allVolumes }}
       volumes:
-        {{ toYaml . | nindent 8 }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
       {{- end }}

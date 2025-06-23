@@ -80,17 +80,27 @@ nodeSelector: {}
 tolerations: []
 # -- Pod's scheduling constraints.
 affinity: {}
-config: {}
+config:
+  # -- Whether to create resource with config files
+  enabled: false
+  # -- When true, resource as embedded into Secret, instead of ConfigMap
+  confidential: true
+  # -- Path on the file system where configuration files are mounted onto
+  mountPath: /config
+  # -- Actual config files content
+  data: {}
+  #  config.yaml: |
+  #    listen: :9000
 # -- extra mount points to use in pod, should be aligned with extraVolumes
 extraMounts:
-#  - path: /data
+#  - mountPath: /data
 #    name: data
 #    sub: file.txt
 # -- extra volumes to use in pod, should be aligned with extraMounts
-extraVolumes:
-#  - name: config
+extraVolumes: []
+#  - name: data
 #    secret:
-#      secretName: config
+#      secretName: my-data
 # -- extra objects to create
 extraObjects: []
 #  - apiVersion: v1
