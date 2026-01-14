@@ -32,13 +32,13 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6.2.0
         with:
-          go-version: '1.24'
+          go-version: '1.25'
 
       - name: Install pre-commit dependencies
         run: |
           go install github.com/google/yamlfmt/cmd/yamlfmt@latest
           go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
-          helm plugin install https://github.com/helm-unittest/helm-unittest.git
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git --verify=false
 
       - name: Check out code
         uses: actions/checkout@v6
