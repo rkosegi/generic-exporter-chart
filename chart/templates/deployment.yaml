@@ -27,7 +27,7 @@ spec:
     metadata:
       {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
       {{- end }}
       labels:
         {{- include "generic-exporter.selectorLabels" . | nindent 8 }}
@@ -42,8 +42,8 @@ spec:
         {{- tpl (toYaml .) $ | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
-          {{- with .Values.podSecurityContext }}
+        - name: {{ tpl .Values.containerName $ }}
+          {{- with .Values.securityContext }}
           securityContext:
             {{- tpl (toYaml .) $ | nindent 12 }}
           {{- end }}
@@ -85,12 +85,15 @@ spec:
           {{- if .Values.config.enabled }}
           {{-   $allMounts = append $allMounts (dict "name" "config" "mountPath" .Values.config.mountPath "readOnly" true)}}
           {{- end }}
-          {{- if .Values.extraVolumes }}
+          {{- if .Values.extraMounts }}
           {{-   $allMounts = concat $allMounts .Values.extraMounts }}
           {{- end }}
           {{- with $allMounts }}
           volumeMounts:
             {{- tpl (toYaml $allMounts) $ | nindent 12}}
+          {{- end }}
+          {{- with .Values.extraContainers }}
+            {{- tpl (toYaml .) $ | nindent 8}}
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

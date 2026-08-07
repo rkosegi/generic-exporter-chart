@@ -21,7 +21,9 @@ Generic Prometheus exporter chart
 | config.data | object | `{}` | Actual config files content |
 | config.enabled | bool | `false` | Whether to create resource with config files |
 | config.mountPath | string | `"/config"` | Path on the file system where configuration files are mounted onto |
+| containerName | string | `"{{ .Chart.Name }}"` |  |
 | containerPort | int | `9000` | Port that exporter is listening on. Also used for probes (if enabled) |
+| extraContainers | list | `[]` | extra containers to create in pod |
 | extraMounts | string | `nil` | extra mount points to use in pod, should be aligned with extraVolumes |
 | extraObjects | list | `[]` | extra objects to create |
 | extraVolumes | list | `[]` | extra volumes to use in pod, should be aligned with extraMounts |
@@ -32,12 +34,12 @@ Generic Prometheus exporter chart
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` | Node selector that could restrict placement of pods |
 | podAnnotations | object | `{}` | annotations to put on pod |
-| podSecurityContext | object | `{"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsNonRoot":true}` | SecurityContext to put on pod |
+| podSecurityContext | object | `{"runAsNonRoot":true}` | SecurityContext to put on pod |
 | probe.enabled | bool | `true` | When true, then probes are configured on container |
 | probe.path | string | `"/healthz"` | HTTP context path that handles probe requests |
 | replicaCount | int | `1` | Number of replicas |
 | resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}` | Container resources |
-| securityContext | object | `{}` | Additional security context to put on container |
+| securityContext | object | `{"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true}` | Additional security context to put on container |
 | service.port | int | `80` | Service port |
 | service.targetPort | string | `"metrics"` | Name of target port. Used to match endpoint in service monitor and definition in service. |
 | service.type | string | `"ClusterIP"` | Type of service |

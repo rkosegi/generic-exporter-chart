@@ -51,14 +51,14 @@ serviceMonitor:
 podAnnotations: {}
 # -- SecurityContext to put on pod
 podSecurityContext:
+  runAsNonRoot: true
+# runAsUser: 1000
+# -- Additional security context to put on container
+securityContext:
   capabilities:
     drop:
       - ALL
   readOnlyRootFilesystem: true
-  runAsNonRoot: true
-# runAsUser: 1000
-# -- Additional security context to put on container
-securityContext: {}
 # -- Port that exporter is listening on. Also used for probes (if enabled)
 containerPort: 9000
 # -- Container resources
@@ -80,6 +80,7 @@ nodeSelector: {}
 tolerations: []
 # -- Pod's scheduling constraints.
 affinity: {}
+containerName: '{{ .Chart.Name }}'
 config:
   # -- Whether to create resource with config files
   enabled: false
@@ -91,6 +92,10 @@ config:
   data: {}
   #  config.yaml: |
   #    listen: :9000
+# -- extra containers to create in pod
+extraContainers: []
+# - name: side-car-1
+#   image: busybox:latest
 # -- extra mount points to use in pod, should be aligned with extraVolumes
 extraMounts:
 #  - mountPath: /data
