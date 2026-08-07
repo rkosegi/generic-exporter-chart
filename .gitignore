@@ -14,3 +14,5 @@
 /.idea/
 *.tgz
 /chart/tests/__snapshot__/
+.private
+.cache
